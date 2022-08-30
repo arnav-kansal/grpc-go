@@ -66,22 +66,24 @@ func main() {
 	healthgrpc.RegisterHealthServer(s, healthcheck)
 	pb.RegisterEchoServer(s, &echoServer{})
 
-	go func() {
-		// asynchronously inspect dependencies and toggle serving status as needed
-		next := healthpb.HealthCheckResponse_SERVING
+	healthcheck.SetServingStatus(system, healthpb.HealthCheckResponse_SERVING)
 
-		for {
-			healthcheck.SetServingStatus(system, next)
+	//go func() {
+	//// asynchronously inspect dependencies and toggle serving status as needed
+	//next := healthpb.HealthCheckResponse_SERVING
 
-			if next == healthpb.HealthCheckResponse_SERVING {
-				next = healthpb.HealthCheckResponse_NOT_SERVING
-			} else {
-				next = healthpb.HealthCheckResponse_SERVING
-			}
+	//for {
+	//healthcheck.SetServingStatus(system, next)
 
-			time.Sleep(*sleep)
-		}
-	}()
+	//if next == healthpb.HealthCheckResponse_SERVING {
+	//next = healthpb.HealthCheckResponse_NOT_SERVING
+	//} else {
+	//next = healthpb.HealthCheckResponse_SERVING
+	//}
+
+	//time.Sleep(*sleep)
+	//}
+	//}()
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
